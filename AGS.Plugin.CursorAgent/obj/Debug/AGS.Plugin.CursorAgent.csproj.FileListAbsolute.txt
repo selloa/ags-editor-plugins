@@ -1,0 +1,6 @@
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\bin\Debug\AGS.Plugin.CursorAgent.dll
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\bin\Debug\AGS.Plugin.CursorAgent.pdb
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\obj\Debug\AGS.Plugin.CursorAgent.csproj.AssemblyReference.cache
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\obj\Debug\AGS.Plugin.CursorAgent.csproj.CoreCompileInputs.cache
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\obj\Debug\AGS.Plugin.CursorAgent.dll
+C:\Users\selloa\Desktop\ags-editor-plugin-agent-integration\AGS.Plugin.CursorAgent\obj\Debug\AGS.Plugin.CursorAgent.pdb
