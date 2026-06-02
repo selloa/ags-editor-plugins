@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AGS.Types;
@@ -10,6 +11,7 @@ namespace AGS.Plugin.CursorAgent
         private readonly IAGSEditor _editor;
         private readonly TextBox _originalText;
         private readonly TextBox _proposedText;
+        private readonly Label _captureStatusLabel;
         private EditorCaptureContext _captureContext;
         private string _lastApplyBefore;
         private string _lastApplyAfter;
@@ -60,10 +62,17 @@ namespace AGS.Plugin.CursorAgent
                 Size = new Size(360, 130)
             };
 
+            _captureStatusLabel = new Label
+            {
+                Text = "Target: none (capture first)",
+                AutoSize = true,
+                Location = new Point(12, 347)
+            };
+
             var loadMockButton = new Button
             {
-                Text = "Load mock diff",
-                Location = new Point(12, 355),
+                Text = "Test mock",
+                Location = new Point(12, 369),
                 Size = new Size(80, 28)
             };
             loadMockButton.Click += (sender, args) => LoadMockDiff();
@@ -71,15 +80,23 @@ namespace AGS.Plugin.CursorAgent
             var captureContextButton = new Button
             {
                 Text = "Capture context",
-                Location = new Point(98, 355),
+                Location = new Point(98, 369),
                 Size = new Size(90, 28)
             };
             captureContextButton.Click += (sender, args) => CaptureContextFromEditor();
 
+            var selectionTemplateButton = new Button
+            {
+                Text = "Template sel",
+                Location = new Point(194, 369),
+                Size = new Size(80, 28)
+            };
+            selectionTemplateButton.Click += SelectionTemplateButtonClick;
+
             var previewButton = new Button
             {
                 Text = "Preview",
-                Location = new Point(194, 355),
+                Location = new Point(234, 403),
                 Size = new Size(60, 28)
             };
             previewButton.Click += PreviewButtonClick;
@@ -87,15 +104,15 @@ namespace AGS.Plugin.CursorAgent
             var applyButton = new Button
             {
                 Text = "Apply manually",
-                Location = new Point(260, 355),
-                Size = new Size(90, 28)
+                Location = new Point(12, 403),
+                Size = new Size(110, 28)
             };
             applyButton.Click += ApplyButtonClick;
 
             var undoButton = new Button
             {
                 Text = "Undo",
-                Location = new Point(12, 389),
+                Location = new Point(128, 403),
                 Size = new Size(80, 28)
             };
             undoButton.Click += UndoButtonClick;
@@ -105,13 +122,15 @@ namespace AGS.Plugin.CursorAgent
             Controls.Add(_originalText);
             Controls.Add(proposedLabel);
             Controls.Add(_proposedText);
+            Controls.Add(_captureStatusLabel);
             Controls.Add(loadMockButton);
             Controls.Add(captureContextButton);
+            Controls.Add(selectionTemplateButton);
             Controls.Add(previewButton);
             Controls.Add(applyButton);
             Controls.Add(undoButton);
 
-            Size = new Size(390, 430);
+            Size = new Size(390, 440);
         }
 
         public void SetCaptureContext(ContentDocument ownPanel, string ownComponentId)
@@ -166,6 +185,7 @@ namespace AGS.Plugin.CursorAgent
 
             _captureContext = context;
             _originalText.Text = contextText;
+            UpdateCaptureStatus();
             _editor.GUIController.ShowMessage(statusMessage, MessageBoxIconType.Information);
         }
 
@@ -177,14 +197,15 @@ namespace AGS.Plugin.CursorAgent
                 return;
             }
 
-            var parsed = PatchEngine.Parse(_proposedText.Text);
-            if (!parsed.Success)
+            List<PatchOperation> operations;
+            string parseError;
+            if (!TryParseProposedOperations(_proposedText.Text, out operations, out parseError))
             {
-                _editor.GUIController.ShowMessage("Patch parse failed: " + parsed.ErrorMessage, MessageBoxIconType.Warning);
+                _editor.GUIController.ShowMessage("Patch parse failed: " + parseError, MessageBoxIconType.Warning);
                 return;
             }
 
-            var applied = PatchEngine.Apply(_originalText.Text, parsed.Operations);
+            var applied = PatchEngine.Apply(_originalText.Text, operations);
             if (!applied.Success)
             {
                 _editor.GUIController.ShowMessage("Patch apply failed: " + applied.ErrorMessage, MessageBoxIconType.Warning);
@@ -207,20 +228,40 @@ namespace AGS.Plugin.CursorAgent
             _lastApplyScriptEditor = _captureContext == null ? null : _captureContext.ScriptEditor;
 
             _editor.GUIController.ShowMessage(
-                "Patch applied safely. " + PatchEngine.BuildSummary(parsed.Operations),
+                "Patch applied safely. " + PatchEngine.BuildSummary(operations),
                 MessageBoxIconType.Information);
         }
 
         private void PreviewButtonClick(object sender, EventArgs e)
         {
-            var parsed = PatchEngine.Parse(_proposedText.Text);
-            if (!parsed.Success)
+            List<PatchOperation> operations;
+            string parseError;
+            if (!TryParseProposedOperations(_proposedText.Text, out operations, out parseError))
             {
-                _editor.GUIController.ShowMessage("Patch parse failed: " + parsed.ErrorMessage, MessageBoxIconType.Warning);
+                _editor.GUIController.ShowMessage("Patch parse failed: " + parseError, MessageBoxIconType.Warning);
                 return;
             }
 
-            _editor.GUIController.ShowMessage(PatchEngine.BuildSummary(parsed.Operations), MessageBoxIconType.Information);
+            _editor.GUIController.ShowMessage(PatchEngine.BuildSummary(operations), MessageBoxIconType.Information);
+        }
+
+        private void SelectionTemplateButtonClick(object sender, EventArgs e)
+        {
+            if (_captureContext == null || !_captureContext.HasSelection)
+            {
+                _editor.GUIController.ShowMessage("Selection template needs a captured selection. Select code, then capture context.", MessageBoxIconType.Warning);
+                return;
+            }
+
+            _proposedText.Text =
+                "REPLACE\r\n" +
+                "OLD:\r\n" +
+                _captureContext.SelectedText + "\r\n" +
+                "END\r\n" +
+                "NEW:\r\n" +
+                "\r\n" +
+                "END\r\n";
+            _editor.GUIController.ShowMessage("Selection-based replace template generated.", MessageBoxIconType.Information);
         }
 
         private void UndoButtonClick(object sender, EventArgs e)
@@ -305,6 +346,55 @@ namespace AGS.Plugin.CursorAgent
 
             scriptAfter = updatedPanelText;
             scriptEditor.Text = scriptAfter;
+            return true;
+        }
+
+        private void UpdateCaptureStatus()
+        {
+            if (_captureContext == null)
+            {
+                _captureStatusLabel.Text = "Target: none (capture first)";
+                return;
+            }
+
+            var mode = _captureContext.HasSelection ? "selection" : "full script";
+            var name = string.IsNullOrWhiteSpace(_captureContext.ScriptPaneName) ? "<unknown>" : _captureContext.ScriptPaneName;
+            _captureStatusLabel.Text = "Target: " + name + " (" + mode + ")";
+        }
+
+        private bool TryParseProposedOperations(string proposedText, out List<PatchOperation> operations, out string errorMessage)
+        {
+            operations = new List<PatchOperation>();
+            errorMessage = string.Empty;
+
+            if (CursorResponseContractParser.LooksLikeJsonContract(proposedText))
+            {
+                var parsedContract = CursorResponseContractParser.Parse(proposedText);
+                if (!parsedContract.Success)
+                {
+                    errorMessage = parsedContract.ErrorMessage;
+                    return false;
+                }
+
+                var adapted = CursorContractPatchAdapter.ToPatchOperations(parsedContract.Operations);
+                if (!adapted.Success)
+                {
+                    errorMessage = adapted.ErrorMessage;
+                    return false;
+                }
+
+                operations = adapted.Operations;
+                return true;
+            }
+
+            var parsedPatch = PatchEngine.Parse(proposedText);
+            if (!parsedPatch.Success)
+            {
+                errorMessage = parsedPatch.ErrorMessage;
+                return false;
+            }
+
+            operations = parsedPatch.Operations;
             return true;
         }
 

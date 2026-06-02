@@ -37,6 +37,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="AGS.Types">
       <HintPath>..\dependencies\AGS.Types.dll</HintPath>
@@ -48,6 +49,8 @@
     <Compile Include="CursorAgentComponent.cs" />
     <Compile Include="EditorContextCapture.cs" />
     <Compile Include="PatchEngine.cs" />
+    <Compile Include="CursorResponseContract.cs" />
+    <Compile Include="CursorContractPatchAdapter.cs" />
     <Compile Include="CursorAgentPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
