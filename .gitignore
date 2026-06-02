@@ -1,2 +1,16 @@
 ags-manual/
 ags-manual-source/
+
+# IDE and build artifacts
+.vs/
+**/.vs/
+**/bin/
+**/obj/
+*.suo
+
+# local archives and generated upgrade logs
+*.zip
+UpgradeLog*.htm
+
+# local AGS SDK dependency (machine-specific)
+dependencies/AGS.Types.dll
