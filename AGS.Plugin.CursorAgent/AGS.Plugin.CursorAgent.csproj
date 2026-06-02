@@ -47,6 +47,7 @@
     <Compile Include="PluginMain.cs" />
     <Compile Include="CursorAgentComponent.cs" />
     <Compile Include="EditorContextCapture.cs" />
+    <Compile Include="PatchEngine.cs" />
     <Compile Include="CursorAgentPane.cs">
       <SubType>UserControl</SubType>
     </Compile>

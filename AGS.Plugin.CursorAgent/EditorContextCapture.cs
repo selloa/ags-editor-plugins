@@ -3,15 +3,31 @@ using AGS.Types;
 
 namespace AGS.Plugin.CursorAgent
 {
+    internal sealed class EditorCaptureContext
+    {
+        public IScriptEditorControl ScriptEditor { get; set; }
+        public string ScriptPaneName { get; set; }
+        public string SelectedText { get; set; }
+        public string FullScriptText { get; set; }
+        public int SelectionStart { get; set; }
+        public int SelectionEnd { get; set; }
+        public bool HasSelection
+        {
+            get { return !string.IsNullOrEmpty(SelectedText); }
+        }
+    }
+
     internal static class EditorContextCapture
     {
         public static bool TryCapture(
             IAGSEditor editor,
             string ownComponentId,
             ContentDocument ownPanel,
+            out EditorCaptureContext captureContext,
             out string contextText,
             out string statusMessage)
         {
+            captureContext = null;
             var details = new StringBuilder();
 
             var game = editor.CurrentGame;
@@ -62,24 +78,28 @@ namespace AGS.Plugin.CursorAgent
 
             if (scriptEditor != null)
             {
+                captureContext = new EditorCaptureContext
+                {
+                    ScriptEditor = scriptEditor,
+                    ScriptPaneName = scriptPaneName,
+                    SelectedText = scriptEditor.SelectedText ?? string.Empty,
+                    FullScriptText = scriptEditor.Text ?? string.Empty,
+                    SelectionStart = scriptEditor.SelectionStart,
+                    SelectionEnd = scriptEditor.SelectionEnd
+                };
+
                 details.AppendLine("Script: " + scriptPaneName);
 
-                if (!string.IsNullOrEmpty(scriptEditor.SelectedText))
+                if (!string.IsNullOrEmpty(captureContext.SelectedText))
                 {
-                    details.AppendLine();
-                    details.AppendLine("Selected text:");
-                    details.AppendLine(scriptEditor.SelectedText);
-                    contextText = details.ToString().Trim();
+                    contextText = captureContext.SelectedText;
                     statusMessage = "Captured script selection.";
                     return true;
                 }
 
-                if (!string.IsNullOrWhiteSpace(scriptEditor.Text))
+                if (!string.IsNullOrWhiteSpace(captureContext.FullScriptText))
                 {
-                    details.AppendLine();
-                    details.AppendLine("Script text (no selection):");
-                    details.AppendLine(scriptEditor.Text);
-                    contextText = details.ToString().Trim();
+                    contextText = captureContext.FullScriptText;
                     statusMessage = "Captured open script text (no selection). Select text first for a smaller capture.";
                     return true;
                 }
