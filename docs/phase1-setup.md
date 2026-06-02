@@ -10,9 +10,10 @@ This repository now includes `AGS.Plugin.CursorAgent`, a Phase 1 starter plugin 
 - One project tree root and one top-level menu (`Cursor Agent`).
 - A dockable panel with:
   - original/proposed text fields,
-  - mock diff loader,
+  - mock diff loader (`Test mock`),
   - editor context capture action (with graceful fallback if selection is unavailable),
-  - manual apply action placeholder.
+  - transport import action (`Import`) for clipboard/file response ingestion with parse validation,
+  - manual preview/apply/undo flow.
 - Component state persistence via `ToXml`/`FromXml`.
 
 ## Local machine setup

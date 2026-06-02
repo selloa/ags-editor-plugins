@@ -82,3 +82,29 @@ All failures remain non-destructive and stop before apply:
 - Integration seam: `CursorAgentPane` `Preview` and `Apply manually` handlers call shared operation parsing method.
 
 This is intended as scaffolding for later Cursor transport integration (response ingestion/UI), not as a final protocol.
+
+## Minimal Transport Hook (Current)
+
+The plugin now includes a conservative transport seam in the panel and top menu:
+
+- Panel button: `Import`
+- Menu action: `Cursor Agent -> Import Cursor Response`
+
+Import sources:
+
+- clipboard text,
+- explicit file (`.txt`, `.json`, or any text file).
+
+Behavior:
+
+1. User chooses clipboard or file source.
+2. Imported text is validated through the same parse path already used by `Preview` and `Apply manually`:
+   - JSON contract (`CursorResponseContractParser` + `CursorContractPatchAdapter`), or
+   - legacy patch text (`PatchEngine.Parse`).
+3. Only when parsing succeeds, the plugin copies the text into `Proposed output`.
+4. If parsing fails, import is rejected and no script content is changed.
+
+Safety note:
+
+- This hook does not auto-apply patches.
+- Existing manual `Preview` and `Apply manually` flow remains unchanged.

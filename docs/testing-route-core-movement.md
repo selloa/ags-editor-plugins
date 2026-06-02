@@ -14,6 +14,7 @@ The plugin currently behaves as a **safe patch executor** with manual review:
   - If text is selected, capture is **selection mode**.
   - If no text is selected, capture is **full script mode**.
 - `Template sel` generates a `REPLACE` patch template from the captured selection.
+- `Import` ingests Cursor response text (clipboard or file) into `Proposed output` only after parse validation.
 - `Preview` parses the patch text and reports operation counts.
 - `Apply manually`:
   - parses and validates patch text,
@@ -199,6 +200,71 @@ Expected:
 
 ---
 
+## Scenario 6: Transport Import Hook
+
+### 6A) Import from clipboard (legacy patch)
+
+1. Copy this block to clipboard:
+
+```text
+REPLACE
+OLD:
+return Absolute (point1 - point2);
+END
+NEW:
+return Absolute(point1 - point2);
+END
+```
+
+2. In plugin panel click `Import`.
+3. Choose `Yes` (clipboard).
+
+Expected:
+- Success message with parsed operation summary.
+- `Proposed output` is filled with imported text.
+- No apply happens automatically.
+
+### 6B) Import from clipboard (JSON contract)
+
+Copy this JSON and import again:
+
+```json
+{
+  "contract": "ags.cursor.patch-ops",
+  "version": 1,
+  "operations": [
+    {
+      "op": "replace",
+      "match": "return Absolute (point1 - point2);",
+      "text": "return Absolute(point1 - point2);"
+    }
+  ]
+}
+```
+
+Expected:
+- Import succeeds and fills `Proposed output`.
+- `Preview` still works.
+- `Apply manually` remains explicit and unchanged.
+
+### 6C) Import rejection
+
+Import this invalid JSON:
+
+```json
+{
+  "contract": "ags.cursor.patch-ops",
+  "version": 1,
+  "operations": []
+}
+```
+
+Expected:
+- Import warning/error message.
+- `Proposed output` is not overwritten by invalid text.
+
+---
+
 ## Notes Template (for your findings)
 
 Use this per scenario while testing:
@@ -222,4 +288,5 @@ Notes:
 3. Scenario 3 (selection conflict)
 4. Scenario 4 (parser strictness)
 5. Scenario 5 (full script conflict behavior)
+6. Scenario 6 (transport import)
 

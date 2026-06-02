@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using AGS.Types;
 
@@ -93,6 +94,14 @@ namespace AGS.Plugin.CursorAgent
             };
             selectionTemplateButton.Click += SelectionTemplateButtonClick;
 
+            var importResponseButton = new Button
+            {
+                Text = "Import",
+                Location = new Point(280, 369),
+                Size = new Size(80, 28)
+            };
+            importResponseButton.Click += (sender, args) => ImportCursorResponse();
+
             var previewButton = new Button
             {
                 Text = "Preview",
@@ -126,6 +135,7 @@ namespace AGS.Plugin.CursorAgent
             Controls.Add(loadMockButton);
             Controls.Add(captureContextButton);
             Controls.Add(selectionTemplateButton);
+            Controls.Add(importResponseButton);
             Controls.Add(previewButton);
             Controls.Add(applyButton);
             Controls.Add(undoButton);
@@ -187,6 +197,49 @@ namespace AGS.Plugin.CursorAgent
             _originalText.Text = contextText;
             UpdateCaptureStatus();
             _editor.GUIController.ShowMessage(statusMessage, MessageBoxIconType.Information);
+        }
+
+        public void ImportCursorResponse()
+        {
+            var choice = MessageBox.Show(
+                "Import Cursor response from clipboard?\r\n\r\nYes = Clipboard, No = File...",
+                "Import Cursor Response",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (choice == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            string importedText;
+            if (choice == DialogResult.Yes)
+            {
+                if (!TryReadClipboardText(out importedText))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (!TryReadTextFromFile(out importedText))
+                {
+                    return;
+                }
+            }
+
+            List<PatchOperation> operations;
+            string parseError;
+            if (!TryParseProposedOperations(importedText, out operations, out parseError))
+            {
+                _editor.GUIController.ShowMessage("Import failed: " + parseError, MessageBoxIconType.Warning);
+                return;
+            }
+
+            _proposedText.Text = importedText;
+            _editor.GUIController.ShowMessage(
+                "Imported response successfully. " + PatchEngine.BuildSummary(operations),
+                MessageBoxIconType.Information);
         }
 
         private void ApplyButtonClick(object sender, EventArgs e)
@@ -395,6 +448,69 @@ namespace AGS.Plugin.CursorAgent
             }
 
             operations = parsedPatch.Operations;
+            return true;
+        }
+
+        private bool TryReadClipboardText(out string text)
+        {
+            text = string.Empty;
+            try
+            {
+                if (!Clipboard.ContainsText())
+                {
+                    _editor.GUIController.ShowMessage("Clipboard does not contain text.", MessageBoxIconType.Warning);
+                    return false;
+                }
+
+                text = Clipboard.GetText();
+            }
+            catch (Exception ex)
+            {
+                _editor.GUIController.ShowMessage("Could not read clipboard text: " + ex.Message, MessageBoxIconType.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                _editor.GUIController.ShowMessage("Clipboard text is empty.", MessageBoxIconType.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryReadTextFromFile(out string text)
+        {
+            text = string.Empty;
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Import Cursor Response";
+                dialog.Filter = "Text and JSON files|*.txt;*.json|All files|*.*";
+                dialog.CheckFileExists = true;
+                dialog.Multiselect = false;
+                var dialogResult = dialog.ShowDialog();
+                if (dialogResult != DialogResult.OK)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    text = File.ReadAllText(dialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    _editor.GUIController.ShowMessage("Could not read file: " + ex.Message, MessageBoxIconType.Warning);
+                    return false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                _editor.GUIController.ShowMessage("Selected file is empty.", MessageBoxIconType.Warning);
+                return false;
+            }
+
             return true;
         }
 

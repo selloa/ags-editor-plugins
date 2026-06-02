@@ -11,6 +11,7 @@ namespace AGS.Plugin.CursorAgent
         private const string OpenPanelControlId = "CursorAgentOpenPanel";
         private const string PreviewPatchControlId = "CursorAgentPreviewPatch";
         private const string CaptureContextControlId = "CursorAgentCaptureContext";
+        private const string ImportResponseControlId = "CursorAgentImportResponse";
 
         private readonly IAGSEditor _editor;
         private readonly ContentDocument _panel;
@@ -30,6 +31,7 @@ namespace AGS.Plugin.CursorAgent
             _mainMenuItems.Commands.Add(new MenuCommand(OpenPanelControlId, "Open Cursor Agent Panel"));
             _mainMenuItems.Commands.Add(new MenuCommand(PreviewPatchControlId, "Load Mock Patch Preview"));
             _mainMenuItems.Commands.Add(new MenuCommand(CaptureContextControlId, "Capture Current Context"));
+            _mainMenuItems.Commands.Add(new MenuCommand(ImportResponseControlId, "Import Cursor Response"));
 
             _editor.GUIController.AddMenu(this, MainMenuId, "Cursor Agent", _editor.GUIController.FileMenuID);
             _editor.GUIController.AddMenuItems(this, _mainMenuItems);
@@ -64,6 +66,13 @@ namespace AGS.Plugin.CursorAgent
             {
                 _paneControl.CaptureContextFromEditor();
                 _editor.GUIController.AddOrShowPane(_panel);
+                return;
+            }
+
+            if (controlID == ImportResponseControlId)
+            {
+                _editor.GUIController.AddOrShowPane(_panel);
+                _paneControl.ImportCursorResponse();
             }
         }
 
