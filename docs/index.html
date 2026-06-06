@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>AGS Editor Plugin Collection</title>
+  <meta name="description" content="Forkbare AGS 3.6 Editor-Plugins — Sample, Viewer und Experimente.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="markdown-export" data-theme="dark">
+  <header class="site-header">
+    <div class="wrap">
+      <div id="google_translate_element" class="site-translate"></div>
+      <h1>AGS Editor Plugin Collection</h1>
+      <p class="meta">Version 1.0.0 · 2026-06-06 · published · by <a href="https://selloa.github.io/ags-editor-plugins/" target="_blank" rel="noopener noreferrer">selloa</a></p>
+
+    </div>
+  </header>
+  <div class="site-layout">
+    <button type="button" class="site-sidebar-show" id="sidebar-show" hidden aria-controls="site-sidebar" title="Show navigation">Show nav</button>
+  <aside class="site-sidebar" id="site-sidebar" aria-label="Page sections">
+    <div class="site-sidebar-header">
+      <p class="site-sidebar-title">On this page</p>
+      <button type="button" class="site-sidebar-toggle" id="sidebar-hide" aria-controls="site-sidebar" aria-expanded="true" title="Hide navigation">Hide</button>
+    </div>
+    <nav>
+      <ul>
+        <li class="sidebar-h1"><a href="#ags-editor-plugin-collection">AGS Editor Plugin Collection</a></li>
+        <li class="sidebar-h2"><a href="#plugins">Plugins</a></li>
+        <li class="sidebar-h2"><a href="#schnellstart">Schnellstart</a></li>
+      </ul>
+    </nav>
+  </aside>
+    <main id="markview-container" class="markdown-body code-block-scroll">
+    <h1 id="ags-editor-plugin-collection">AGS Editor Plugin Collection</h1>
+    <p><em>Sammlung von Adventure Game Studio Editor-Plugins (.NET), die du forken und erweitern kannst.</em></p>
+    <p>Diese Seite listet automatisch alle <strong><code>AGS.Plugin.*</code></strong>-Ordner im Repository (4 Plugins). Nach jedem Push wird sie per GitHub Action neu gebaut; Veröffentlichung über <strong>GitHub Pages</strong> aus dem Ordner <strong><code>docs/</code></strong>.</p>
+    <p>Offizielle AGS-Doku: <a href="https://adventuregamestudio.github.io/ags-manual/EditorPlugins.html" target="_blank" rel="noopener noreferrer">Editor Plugins</a></p>
+    <hr>
+    <h2 id="plugins">Plugins</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>Plugin</th>
+    <th>Ordner</th>
+    <th>AGS</th>
+    <th>Beschreibung</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><a href="https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.CursorAgent" target="_blank" rel="noopener noreferrer">Cursor Agent</a></td>
+    <td><code>AGS.Plugin.CursorAgent</code></td>
+    <td><code>3.6.0.0</code></td>
+    <td>AGS-Editor-Plugin (.NET)</td>
+    </tr>
+    <tr>
+    <td><a href="https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.EntityCatalog" target="_blank" rel="noopener noreferrer">Entity Catalog</a></td>
+    <td><code>AGS.Plugin.EntityCatalog</code></td>
+    <td><code>3.6.0.0</code></td>
+    <td>AGS-Editor-Plugin (.NET)</td>
+    </tr>
+    <tr>
+    <td><a href="https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.Sample" target="_blank" rel="noopener noreferrer">Sample plugin</a></td>
+    <td><code>AGS.Plugin.Sample</code></td>
+    <td><code>3.0.0.0</code></td>
+    <td>AGS-Editor-Plugin (.NET)</td>
+    </tr>
+    <tr>
+    <td><a href="https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.SpeechViewer" target="_blank" rel="noopener noreferrer">Speech Viewer</a></td>
+    <td><code>AGS.Plugin.SpeechViewer</code></td>
+    <td><code>3.6.0.0</code></td>
+    <td>AGS-Editor-Plugin (.NET)</td>
+    </tr>
+    </tbody>
+    </table>
+    <hr>
+    <h2 id="schnellstart">Schnellstart</h2>
+    <ol>
+    <li><strong><code>AGS.Types.dll</code></strong> aus deiner AGS-Installation nach <code>dependencies/AGS.Types.dll</code> kopieren (siehe <a href="../dependencies/README.md"><code>dependencies/README.md</code></a>).</li>
+    <li>Plugin-Projekt bauen (Visual Studio oder MSBuild), z. B. <code>AGS.Plugin.SpeechViewer</code>.</li>
+    <li>Die <strong><code>bin\Debug\*.dll</code></strong> in den AGS-Editor-Ordner legen und den Editor neu starten.</li>
+    </ol>
+    <p>Neues Plugin: <a href="../AGS.Plugin.Sample/"><code>AGS.Plugin.Sample</code></a> kopieren, IDs umbenennen, bauen, deployen.</p>
+    <p>Ausführliche Doku: <a href="../README.md"><code>README.md</code></a> im Repo-Root.</p>
+    <hr>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <p>Built from <code>content/index.md</code> · v1.0.0 · 2026-06-06 · <a href="https://selloa.github.io/ags-editor-plugins/" target="_blank" rel="noopener noreferrer">selloa</a></p>
+  </footer>
+  <a href="#" class="back-top" id="backTop" aria-label="Back to top">↑ Top</a>
+  <script>
+  (function () {
+    var hideBtn = document.getElementById('sidebar-hide');
+    var showBtn = document.getElementById('sidebar-show');
+    var storageKey = 'ags-editor-plugins-sidebar-hidden-home';
+
+    function setSidebarHidden(hidden) {
+      document.body.classList.toggle('sidebar-hidden', hidden);
+      if (hideBtn) hideBtn.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+      if (showBtn) showBtn.hidden = !hidden;
+      try { localStorage.setItem(storageKey, hidden ? '1' : '0'); } catch (e) {}
+    }
+
+    try {
+      if (localStorage.getItem(storageKey) === '1') setSidebarHidden(true);
+    } catch (e) {}
+
+    if (hideBtn) hideBtn.addEventListener('click', function () { setSidebarHidden(true); });
+    if (showBtn) showBtn.addEventListener('click', function () { setSidebarHidden(false); });
+
+    var backTop = document.getElementById('backTop');
+    if (backTop) {
+      window.addEventListener('scroll', function () {
+        backTop.classList.toggle('visible', window.scrollY > 400);
+      });
+      backTop.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  })();
+  </script>
+  <script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      { pageLanguage: 'de', includedLanguages: 'de,en', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL },
+      'google_translate_element'
+    );
+  }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

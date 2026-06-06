@@ -1,16 +1,30 @@
 ags-manual/
 ags-manual-source/
-
+docs/private/
+__pycache__/
+**/__pycache__/
 # IDE and build artifacts
 .vs/
 **/.vs/
 **/bin/
 **/obj/
 *.suo
+*.user
+*.rsuser
 
 # local archives and generated upgrade logs
 *.zip
 UpgradeLog*.htm
 
-# local AGS SDK dependency (machine-specific)
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Scratch / duplicate plugin folders (keep one canonical copy per plugin)
+**/Backup/
+**/Backup1/
+* copy/
+
+# local AGS SDK dependency (machine-specific; see dependencies/README.md)
 dependencies/AGS.Types.dll
