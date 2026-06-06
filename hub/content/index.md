@@ -10,7 +10,7 @@ description: Forkbare AGS 3.6 Editor-Plugins — Sample, Viewer und Experimente.
 
 *Sammlung von Adventure Game Studio Editor-Plugins (.NET), die du forken und erweitern kannst.*
 
-Diese Seite listet automatisch alle **`AGS.Plugin.*`**-Ordner im Repository (4 Plugins). Nach jedem Push wird sie per GitHub Action neu gebaut; Veröffentlichung über **GitHub Pages** aus dem Ordner **`docs/`**.
+Diese Seite listet automatisch alle **`AGS.Plugin.*`**-Ordner im Repository (6 Plugins). Nach jedem Push wird sie per GitHub Action neu gebaut; Veröffentlichung über **GitHub Pages** aus dem Ordner **`docs/`**.
 
 Offizielle AGS-Doku: [Editor Plugins](https://adventuregamestudio.github.io/ags-manual/EditorPlugins.html)
 
@@ -22,6 +22,8 @@ Offizielle AGS-Doku: [Editor Plugins](https://adventuregamestudio.github.io/ags-
 | --- | --- | --- | --- |
 | [Cursor Agent](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.CursorAgent) | `AGS.Plugin.CursorAgent` | `3.6.0.0` | AGS-Editor-Plugin (.NET) |
 | [Entity Catalog](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.EntityCatalog) | `AGS.Plugin.EntityCatalog` | `3.6.0.0` | AGS-Editor-Plugin (.NET) |
+| [Game States](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.GameStates) | `AGS.Plugin.GameStates` | `3.6.0.0` | Scans GlobalInt defines and Get/SetGlobalInt usage across scripts; exports a searchable state catalog for any AGS project. |
+| [Game States (AOTT)](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.GameStates.AOTT) | `AGS.Plugin.GameStates.AOTT` | `3.6.0.0` | Audit of the Tentacle GlobalInt catalog — includes EpisodeIRS_GameStartInit and episode room grouping. |
 | [Sample plugin](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.Sample) | `AGS.Plugin.Sample` | `3.0.0.0` | AGS-Editor-Plugin (.NET) |
 | [Speech Viewer](https://github.com/selloa/ags-editor-plugins/tree/master/AGS.Plugin.SpeechViewer) | `AGS.Plugin.SpeechViewer` | `3.6.0.0` | AGS-Editor-Plugin (.NET) |
 

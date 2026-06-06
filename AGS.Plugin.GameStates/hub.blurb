@@ -1,0 +1,1 @@
+Scans GlobalInt defines and Get/SetGlobalInt usage across scripts; exports a searchable state catalog for any AGS project.

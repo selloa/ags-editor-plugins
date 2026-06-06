@@ -38,6 +38,8 @@ class PluginInfo:
 def should_skip_dir(name: str) -> bool:
     if not PLUGIN_DIR_RE.match(name):
         return True
+    if name.endswith(".Core"):
+        return True
     lower = name.lower()
     return any(part.lower() in lower for part in SKIP_DIR_PARTS)
 

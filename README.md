@@ -20,9 +20,37 @@ Offizielle AGS-Doku zu Editor-Plugins: [Editor Plugins](https://adventuregamestu
 | [`AGS.Plugin.Sample`](AGS.Plugin.Sample/) | Offizielles Sample aus dem AGS-Handbuch — minimaler Menü-/Tree-/Pane-Scaffold | **Neues Plugin starten** |
 | [`AGS.Plugin.SpeechViewer`](AGS.Plugin.SpeechViewer/) | Dialog- und Script-Speech im Editor anzeigen, filtern, als HTML exportieren | Viewer + Parser-Port aus Python |
 | [`AGS.Plugin.EntityCatalog`](AGS.Plugin.EntityCatalog/) | Rooms, Inventory, Dialogs, Characters, Views, Audio, GUIs, Fonts, Cursors als Tabellen | Viewer + Gatherer aus `Game`-API |
+| [`AGS.Plugin.GameStates`](AGS.Plugin.GameStates/) | GlobalInt-Defines und Get/SetGlobalInt-Nutzung scannen, filtern, als HTML exportieren | Generischer State Catalog (beliebige Projekte) |
+| [`AGS.Plugin.GameStates.AOTT`](AGS.Plugin.GameStates.AOTT/) | Wie GameStates, plus `EpisodeIRS_GameStartInit` / AOTT-Raum-Heuristiken | *Audit of the Tentacle* |
 | [`AGS.Plugin.CursorAgent`](AGS.Plugin.CursorAgent/) | Experiment: Script-Kontext erfassen, Patch-Vorschau/-Apply, Cursor-Response-Import | Fortgeschritten / Agent-Prototyp |
 
 Jedes Plugin ist eine **eigene Class Library** mit eigenem `.csproj` / `.sln` und liefert **eine DLL**, die du in den AGS-Editor-Ordner legst. Mehrere Plugins können gleichzeitig geladen werden, solange ihre **Component-IDs** eindeutig sind.
+
+**Game States:** Nur `AGS.Plugin.GameStates.dll` bzw. `AGS.Plugin.GameStates.AOTT.dll` deployen — **nicht** `AGS.Plugin.GameStates.Core.dll` (Build-Hilfsprojekt, kein Editor-Plugin; der AGS Editor versucht jede DLL im Ordner zu laden).
+
+---
+
+## Game States — generisch vs. AOTT
+
+Beide Plugins teilen dieselbe UI (Baum + Tabelle, Filter, HTML-Export) und denselben Parser-Kern in [`AGS.Plugin.GameStates.Core/`](AGS.Plugin.GameStates.Core/) (Quellen werden in die jeweilige Plugin-DLL **eingebunden**, nicht separat deployt). Sie scannen Root-`*.asc` / `*.ash` auf `#define`-Symbole, `GetGlobalInt` / `SetGlobalInt`, Slot-Registry in `GlobalScript` und bauen daraus Story-/Door-/Reset-/Warnungs-Ansichten.
+
+| | [`AGS.Plugin.GameStates`](AGS.Plugin.GameStates/) | [`AGS.Plugin.GameStates.AOTT`](AGS.Plugin.GameStates.AOTT/) |
+|--|--|--|
+| **Zielgruppe** | Beliebige AGS-Projekte mit GlobalInt-Flags | [*Audit of the Tentacle*](https://github.com/selloa/ags-editor-plugins) (IRS-Audit-Konventionen) |
+| **Editor-Menü / Tree** | Game States | Game States (AOTT) |
+| **Init-Werte („New game reset“)** | nur `game_start` in `GlobalScript` | `game_start` **und** `EpisodeIRS_GameStartInit` in `episode_irs_audit.asc` |
+| **Raum-Zuordnung aus Dateiname** | `room123.asc` → Raum `123`, `GlobalScript` → `global`, `core_*` … | wie generisch, plus `episode_irs_audit.asc` → Raum **`episode`** |
+| **QA-Hinweise** | Sets in `game_start` zählen nicht als „set never read“ | zusätzlich Sets in `EpisodeIRS_GameStartInit` ausgenommen |
+| **Referenz** | [`generate_state_catalog.py`](AGS.Plugin.GameStates/generate_state_catalog.py) (generisches Profil = nur `game_start`) | gleiches Skript mit vollem AOTT-Verhalten (entspricht dem ursprünglichen Offline-Export) |
+
+**Welches Plugin wählen?**
+
+- **Neues / fremdes Spiel** → `AGS.Plugin.GameStates.dll` (generisch).
+- **Audit of the Tentacle** (oder Fork mit gleichen Script-Namen und Init-Funktionen) → `AGS.Plugin.GameStates.AOTT.dll` für vollständige Reset-Liste und `episode`-Gruppierung.
+
+Beide DLLs können gleichzeitig im Editor liegen (eindeutige Component-IDs). Für ein Projekt reicht in der Regel **eines** — meist AOTT nur für das Tentacle-Projekt.
+
+Optional pro Plugin: [`hub.blurb`](AGS.Plugin.GameStates/hub.blurb) / [`PLUGIN.md`](AGS.Plugin.GameStates.AOTT/PLUGIN.md) für Hub-Beschreibungen.
 
 ---
 
@@ -104,6 +132,7 @@ Einige Plugins haben ein begleitendes Python-Skript als **Spezifikation / Offlin
 |--------|--------|
 | Speech Viewer | [`voice_script_export.py`](AGS.Plugin.SpeechViewer/voice_script_export.py) |
 | Entity Catalog | [`agf_entity_catalog.py`](AGS.Plugin.EntityCatalog/agf_entity_catalog.py) |
+| Game States | [`generate_state_catalog.py`](AGS.Plugin.GameStates/generate_state_catalog.py) |
 
 Die C#-Plugins lesen bevorzugt **Live-Daten** aus dem Editor (`CurrentGame`), inkl. uns gespeicherter Änderungen.
 
@@ -150,6 +179,9 @@ dependencies/          # AGS.Types.dll (lokal, siehe README dort)
 AGS.Plugin.Sample/     # Minimalvorlage
 AGS.Plugin.SpeechViewer/
 AGS.Plugin.EntityCatalog/
+AGS.Plugin.GameStates/          # generischer GlobalInt State Catalog
+AGS.Plugin.GameStates.AOTT/     # Audit of the Tentacle Profil
+AGS.Plugin.GameStates.Core/     # gemeinsame Quellen (linked in GameStates/*.csproj; nicht in Editor legen)
 AGS.Plugin.CursorAgent/
 hub/                   # Site-Generator (Markdown → docs/)
 docs/                  # Generierte Pages + Planungsnotizen; docs/private/ lokal
