@@ -1,3 +1,8 @@
+Speech Viewer
+<img width="1920" height="1027" alt="Speech Viewer" src="https://github.com/user-attachments/assets/154f58fd-2c36-462a-9a0d-ab88e0800d29" />
+Entity Catalog
+<img width="1920" height="1027" alt="Entity Catalog" src="https://github.com/user-attachments/assets/5d6fbb92-6bae-496a-ab16-e42f61ec9021" />
+
 # AGS Editor Plugin Collection
 
 Sammlung von **Adventure Game Studio (AGS) 3.6** Editor-Plugins (.NET), die du forken, als Vorlage nutzen oder erweitern kannst.
